@@ -1,1 +1,3 @@
-# -IPC1_Proyecto2_-Carn-
+# Walter Javier Santizo Mazariegos
+# 202111718
+# "url de postman"
