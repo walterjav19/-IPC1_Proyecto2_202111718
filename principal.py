@@ -93,9 +93,15 @@ def eliminar_usuarios(id):
         "status": 404
     })
 
-
+@app.route("/books",methods=["POST"])
+def crear_libros():
+    data_libros= request.get_json()
+    for libro in data_libros:
+        libros.append(libro)
+    return jsonify({
+        "msg": "Libros Creados Correctamente",
+        "status": 204
+    })    
 
 if __name__=="__main__":
     app.run(port=3004,debug=True)
-
- 
