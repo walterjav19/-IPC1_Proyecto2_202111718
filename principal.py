@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 app=Flask(__name__)
 
 usuarios=[]
+libros=[]
 
 @app.route('/')
 def home():
@@ -15,14 +16,36 @@ def home():
 @app.route("/usuario",methods=["POST"])
 def crear_usuarios():
     data = request.get_json()
+    id = data.get('id')
+    for i in range(len(usuarios)):
+        if id==usuarios[i].get('id'):
+            return jsonify({
+                "msg": 'Error id de usuario Repetido',
+                "status": 405
+            })
     usuarios.append(data)
-    return jsonify(data)
+    return jsonify({
+        "msg": 'Usuario creado',
+        "status": 201
+    })
+    
 
-@app.route("/usuario/list",methods=["GET"])
-def obtener_usuarios():
-    return jsonify(
-        usuarios
-    )
+@app.route("/usuario/<string:id>",methods=["GET"])
+def obtener_usuarios(id):
+    for i in range(len(usuarios)):
+        if usuarios[i].get('id')==id:
+            return jsonify({
+                "id_user": usuarios[i]['id'],
+                "user_name": usuarios[i]['name'],
+                "user_nickname": usuarios[i]['nickname'],
+                "user_password": usuarios[i]['password'],
+                "user_rol": usuarios[i]['rol'],
+                "available": usuarios[i]['available'],
+            })
+    return jsonify({
+        "msg": "Error no existe el Id",
+        "status": 404
+    })
 
 @app.route("/usuario/actualizar",methods=["PUT"])
 def actualizar_usuarios():
