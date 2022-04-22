@@ -24,6 +24,53 @@ def obtener_usuarios():
         usuarios
     )
 
+@app.route("/usuario/actualizar",methods=["PUT"])
+def actualizar_usuarios():
+    data=request.get_json()
+    id= data.get('id')
+    name=data.get('name')
+    nickname=data.get('nickname')
+    password=data.get('password')
+    rol=data.get('rol')
+    available=data.get('available')
+
+    for i in range(len(usuarios)):
+        if usuarios[i].get('id')== id:
+            usuarios[i]['name']=name
+            usuarios[i]['nickname']=nickname
+            usuarios[i]['password']=password
+            usuarios[i]['rol']=rol
+            usuarios[i]['available']=available
+
+            return jsonify({
+                "msg": 'Usuario actualizado',
+                "status": 202
+            }
+            )
+
+    return jsonify({
+        "msg": 'Usuario no encontrado',
+        "status": 404
+    })
+
+
+@app.route("/usuario/<string:id>",methods=["DELETE"])
+def eliminar_usuarios(id):
+    for i in range(len(usuarios)):
+        if usuarios[i].get('id')== id:
+            usuarios.pop(i)
+            return jsonify({
+                "msg": 'Usuario eliminado',
+                "status": 203
+            }
+            )
+
+    return jsonify({
+        "msg": 'Usuario no encontrado',
+        "status": 404
+    })
+
+
 
 if __name__=="__main__":
     app.run(port=3004,debug=True)
