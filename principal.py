@@ -103,5 +103,42 @@ def crear_libros():
         "status": 204
     })    
 
+@app.route("/books/actualizar",methods=["PUT"])
+def actualizar_libros():
+    data=request.get_json()
+    id= data.get('id_book')
+    author=data.get('book_author')
+    title=data.get('book_title')
+    edition=data.get('book_edition')
+    editorial=data.get('book_editorial')
+    year=data.get('book_')
+    description=data.get('book_description')
+    available=data.get('book_available_copies')
+    unvailable=data.get('book_unavailable_copies')
+    copies=data.get('book_copies')
+
+    for i in range(len(libros)):
+        if libros[i].get('id_book')== id:
+            libros[i]['book_author']=author
+            libros[i]['book_title']=title
+            libros[i]['book_edition']=edition
+            libros[i]['book_editorial']=editorial
+            libros[i]['book_year']=year
+            libros[i]['book_description']=description
+            libros[i]['book_available_copies']=available
+            libros[i]['book_unavailable_copies']=unvailable
+            libros[i]['book_copies']=copies
+            return jsonify({
+                "msg": 'Libro actualizado',
+                "status": 205
+            }
+            )
+
+    return jsonify({
+        "msg": 'Libro no encontrado',
+        "status": 404
+    })
+
+
 if __name__=="__main__":
     app.run(port=3004,debug=True)
