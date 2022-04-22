@@ -4,6 +4,7 @@ app=Flask(__name__)
 
 usuarios=[]
 libros=[]
+prestamos=[]
 
 @app.route('/')
 def home():
@@ -101,7 +102,9 @@ def crear_libros():
     return jsonify({
         "msg": "Libros Creados Correctamente",
         "status": 204
-    })    
+    })
+        
+    
 
 @app.route("/books/actualizar",methods=["PUT"])
 def actualizar_libros():
@@ -111,7 +114,7 @@ def actualizar_libros():
     title=data.get('book_title')
     edition=data.get('book_edition')
     editorial=data.get('book_editorial')
-    year=data.get('book_')
+    year=data.get('book_year')
     description=data.get('book_description')
     available=data.get('book_available_copies')
     unvailable=data.get('book_unavailable_copies')
@@ -136,6 +139,42 @@ def actualizar_libros():
 
     return jsonify({
         "msg": 'Libro no encontrado',
+        "status": 404
+    })
+    
+@app.route("/books/<string:id>",methods=["DELETE"])
+def eliminar_libros(id):
+    for i in range(len(libros)):
+        if libros[i].get('id_book')==id:
+            libros.pop(i)
+            return jsonify({
+                "msg": 'Libro Eliminado',
+                "status": 206
+            }
+            )
+    return jsonify({
+        "msg": 'Libro no encontrado',
+        "status": 404
+    })
+
+
+@app.route("/books/buscar",methods=["GET"])
+def obtener_libros():
+    libros_mostrar=[]
+    author=request.args.get('Autor')
+    title=request.args.get('Titulo')
+
+
+    for libro in libros:
+        if libro.get('book_author')==author or libro.get('book_title')==title:
+            libros_mostrar.append(libro)
+
+    print(libros_mostrar)        
+    if len(libros_mostrar)>0:
+        return jsonify(libros_mostrar)
+        
+    return jsonify({
+        "msg": "Error no existe el titulo o el autor",
         "status": 404
     })
 
