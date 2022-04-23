@@ -5,7 +5,6 @@ app=Flask(__name__)
 usuarios=[]
 libros=[]
 prestamos=[]
-
 @app.route('/')
 def home():
     diccionario_envio={
@@ -97,8 +96,22 @@ def eliminar_usuarios(id):
 @app.route("/books",methods=["POST"])
 def crear_libros():
     data_libros= request.get_json()
+    for i in range(len(libros)): 
+         if data_libros[i]['book_available_copies']<0 or data_libros[i]['book_unavailable_copies']<0 or data_libros[i]['book_copies']<0:
+             return jsonify({
+                 "msg": "numero de copias invalido",
+                 "status": 406
+             })
+         elif data_libros[i]['id_book']==libros[i].get('id_book'):
+
+             return jsonify({
+                 "msg": "id del libro repetido",
+                 "status": 406
+             })
+
     for libro in data_libros:
         libros.append(libro)
+     
     return jsonify({
         "msg": "Libros Creados Correctamente",
         "status": 204
@@ -177,6 +190,9 @@ def obtener_libros():
         "msg": "Error no existe el titulo o el autor",
         "status": 404
     })
+
+
+
 
 
 if __name__=="__main__":
