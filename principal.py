@@ -1,3 +1,4 @@
+from operator import le
 from flask import Flask, jsonify, request
 
 app=Flask(__name__)
@@ -5,6 +6,8 @@ app=Flask(__name__)
 usuarios=[]
 libros=[]
 prestamos=[]
+id_usuarios=[]
+id_libros=[]
 @app.route('/')
 def home():
     diccionario_envio={
@@ -17,13 +20,24 @@ def home():
 def crear_usuarios():
     data = request.get_json()
     id = data.get('id')
+    name= data.get('name')
+    nickname=data.get('nickname')
+    password=data.get('password')
+    rol=data.get('rol')
+    
     for i in range(len(usuarios)):
         if id==usuarios[i].get('id'):
             return jsonify({
                 "msg": 'Error id de usuario Repetido',
                 "status": 405
             })
+        elif id=="" or name=="" or nickname=="" or password=="" or rol=="":
+           return jsonify({
+                "msg": 'Error campos minimos vacios',
+                "status": 405                
+            })                    
     usuarios.append(data)
+    id_usuarios.append(id)
     return jsonify({
         "msg": 'Usuario creado',
         "status": 201
@@ -96,22 +110,37 @@ def eliminar_usuarios(id):
 @app.route("/books",methods=["POST"])
 def crear_libros():
     data_libros= request.get_json()
-    for i in range(len(libros)): 
-         if data_libros[i]['book_available_copies']<0 or data_libros[i]['book_unavailable_copies']<0 or data_libros[i]['book_copies']<0:
+    for i in range(len(libros)):        
+         if data_libros[i]['book_available_copies']<0 or data_libros[i]['book_unavailable_copies']<0 or data_libros[i]['book_copies']<0 :
              return jsonify({
                  "msg": "numero de copias invalido",
                  "status": 406
              })
+         elif data_libros[i]['book_author']=="" or  data_libros[i]['book_title']=="":   
+             return jsonify({
+                 "msg":'campos minimos vacios',
+                 "status": 406
+             })
+         elif data_libros[i]['book_year']<0:
+             return jsonify({
+                 "msg":'año incorrecto',
+                 "status": 406                 
+             })     
          elif data_libros[i]['id_book']==libros[i].get('id_book'):
-
              return jsonify({
                  "msg": "id del libro repetido",
                  "status": 406
              })
-
+         elif data_libros[i]['book_edition']<0:
+             return jsonify({
+                 "msg": "edicion no permitida",
+                 "status": 406
+             })
+                                
     for libro in data_libros:
         libros.append(libro)
-     
+        id_libros.append(libro.get('id_book'))
+    print(id_libros)    
     return jsonify({
         "msg": "Libros Creados Correctamente",
         "status": 204
@@ -191,7 +220,31 @@ def obtener_libros():
         "status": 404
     })
 
+@app.route("/borrow",methods=["POST"])
+def crear_prestamos():
+    data_prestamos = request.get_json()
+    info_prestamos=[{}]
+    id_libro=data_prestamos.get('id_book')
+    id_usuario=data_prestamos.get('id_user')
+    if id_usuario not in id_usuarios:
+            return jsonify({
+            "msg": 'prestamo no realizado id del usuario inexistente',
+            "status": 404
+            })           
 
+    if id_libro not in id_libros:
+            return jsonify({
+            "msg": 'prestamo no realizado id del libro inexistente',
+            "status": 404
+            })             
+    
+    
+    prestamos.append(data_prestamos)
+    print(prestamos)
+    return jsonify({
+        "msg": 'Prestamo realizado',
+        "status": 201
+    })
 
 
 
