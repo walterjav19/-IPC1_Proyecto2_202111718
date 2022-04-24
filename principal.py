@@ -242,9 +242,32 @@ def crear_prestamos():
     id_prestamo= len(prestamos)
     
     date=str(datetime.today())
+    for i in range (len(usuarios)):
+        if usuarios[i].get('id')==id_usuario:
+            if usuarios[i].get('available')==False:
+                return jsonify({
+                    'msg': 'Usuario no habilitado para prestamos',
+                    'status':500
+                })
+            
+
     for i in range (len(libros)):
         if libros[i].get('id_book')==id_libro:
-            prestamos.append({'id_borrow':id_prestamo+1, 'Date': date,'Returned': retorno, 'Book': libros[i]})
+            if int(libros[i].get('book_available_copies'))==0:
+                return jsonify({
+                    'msg': 'Copias Disponibles 0 intente mas tarde',
+                    'status':500                    
+                }) 
+            prestamos.append({'id_borrow':id_prestamo+1, 'Date': date,'Returned': retorno, 'Book': 
+            {'id_borrow':libros[i]['book_author'],
+             'book_title':libros[i]['book_title'],
+             'book_edition':libros[i]['book_edition'],
+             'book_editorial':libros[i]['book_editorial'],
+             'book year':libros[i]['book_year'],
+             'book_description':libros[i]['book_description'],
+             'book_available_copies':int(libros[i]['book_available_copies'])-1,
+             'book_unavailable_copies':int(libros[i]['book_unavailable_copies'])+1,
+             'book_copies':libros[i]['book_copies']}})
     print(prestamos)
     return jsonify({
         "msg": 'Prestamo realizado',
