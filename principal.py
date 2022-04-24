@@ -1,4 +1,4 @@
-from operator import le
+from datetime import datetime
 from flask import Flask, jsonify, request
 
 app=Flask(__name__)
@@ -38,6 +38,7 @@ def crear_usuarios():
             })                    
     usuarios.append(data)
     id_usuarios.append(id)
+    print(usuarios)
     return jsonify({
         "msg": 'Usuario creado',
         "status": 201
@@ -219,11 +220,11 @@ def obtener_libros():
         "msg": "Error no existe el titulo o el autor",
         "status": 404
     })
-
+retorno=False
 @app.route("/borrow",methods=["POST"])
 def crear_prestamos():
     data_prestamos = request.get_json()
-    info_prestamos=[{}]
+    
     id_libro=data_prestamos.get('id_book')
     id_usuario=data_prestamos.get('id_user')
     if id_usuario not in id_usuarios:
@@ -237,16 +238,35 @@ def crear_prestamos():
             "msg": 'prestamo no realizado id del libro inexistente',
             "status": 404
             })             
+    global retorno
+    id_prestamo= len(prestamos)
     
-    
-    prestamos.append(data_prestamos)
+    date=str(datetime.today())
+    for i in range (len(libros)):
+        if libros[i].get('id_book')==id_libro:
+            prestamos.append({'id_borrow':id_prestamo+1, 'Date': date,'Returned': retorno, 'Book': libros[i]})
     print(prestamos)
     return jsonify({
         "msg": 'Prestamo realizado',
         "status": 201
     })
 
+@app.route("/borrow/<string:id>",methods=["GET"])
+def obtener_prestamos(id):
 
+    for i in range(len(prestamos)):
+        if int(prestamos[i].get('id_borrow'))==int(id):
+            return jsonify({
+                "id_borrow": prestamos[i]['id_borrow'],
+                "Date": prestamos[i]['Date'],
+                "Returned": prestamos[i]['Returned'],
+                "Book": prestamos[i]['Book']
+            })
+
+    return jsonify({
+        "msg": "Error no existe el id del Prestamo",
+        "status": 404
+    })
 
 if __name__=="__main__":
     app.run(port=3004,debug=True)
