@@ -8,6 +8,8 @@ libros=[]
 prestamos=[]
 id_usuarios=[]
 id_libros=[]
+nombres_usuarios=[]
+nombres_libros=[]
 @app.route('/')
 def home():
     diccionario_envio={
@@ -38,6 +40,7 @@ def crear_usuarios():
             })                    
     usuarios.append(data)
     id_usuarios.append(id)
+    nombres_usuarios.append(name)
     print(usuarios)
     return jsonify({
         "msg": 'Usuario creado',
@@ -141,6 +144,7 @@ def crear_libros():
     for libro in data_libros:
         libros.append(libro)
         id_libros.append(libro.get('id_book'))
+        nombres_libros.append(libro.get('book_title'))
     print(id_libros)    
     return jsonify({
         "msg": "Libros Creados Correctamente",
@@ -312,6 +316,20 @@ def actualizar_prestamos(idd):
     return jsonify({
         "msg": "Libro devuelto correctamente",
         "status": 200
+    })
+
+
+@app.route("/repo",methods=["GET"])
+def crear_reporte():
+    cantidad_usuarios=len(nombres_usuarios)
+    cantidad_libros=len(nombres_libros)
+    cantidad_prestamos=len(prestamos)
+    return jsonify({
+        "cantidad de usuarios": cantidad_usuarios ,
+        "Usuarios": nombres_usuarios,
+        "cantidad de libros": cantidad_libros,
+        "Libros": nombres_libros,
+        "cantidad de prestamos": cantidad_prestamos
     })
 
 
