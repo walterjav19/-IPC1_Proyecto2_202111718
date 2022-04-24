@@ -294,6 +294,16 @@ def obtener_prestamos(id):
 @app.route("/borrow/<string:idd>",methods=["PUT"])
 def actualizar_prestamos(idd):
     for i in range(len(prestamos)):
+        if int(prestamos[i].get('id_borrow'))!=int(idd):
+            return jsonify({
+            "msg": "id del prestamo no existe",
+            "status": 409                
+            })
+        if prestamos[i].get('Returned')==True:
+            return jsonify({
+            "msg": "El libro ya fue devuelto",
+            "status": 409                
+            })            
         if int(prestamos[i].get('id_borrow'))==int(idd):
             prestamos[i]['Book']['book_available_copies']=int(prestamos[i]['Book']['book_available_copies'])+1
             prestamos[i]['Book']['book_unavailable_copies']=int(prestamos[i]['Book']['book_unavailable_copies'])-1
