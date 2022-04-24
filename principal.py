@@ -268,7 +268,7 @@ def crear_prestamos():
              'book_available_copies':int(libros[i]['book_available_copies'])-1,
              'book_unavailable_copies':int(libros[i]['book_unavailable_copies'])+1,
              'book_copies':libros[i]['book_copies']}})
-    print(prestamos)
+
     return jsonify({
         "msg": 'Prestamo realizado',
         "status": 201
@@ -290,6 +290,25 @@ def obtener_prestamos(id):
         "msg": "Error no existe el id del Prestamo",
         "status": 404
     })
+
+@app.route("/borrow/<string:idd>",methods=["PUT"])
+def actualizar_prestamos(idd):
+    for i in range(len(prestamos)):
+        if int(prestamos[i].get('id_borrow'))==int(idd):
+            prestamos[i]['Book']['book_available_copies']=int(prestamos[i]['Book']['book_available_copies'])+1
+            prestamos[i]['Book']['book_unavailable_copies']=int(prestamos[i]['Book']['book_unavailable_copies'])-1
+            prestamos[i]['Returned']=True
+    print(int(prestamos[i]['Book']['book_available_copies'])+1)        
+    return jsonify({
+        "msg": "Libro devuelto correctamente",
+        "status": 200
+    })
+
+
+
+
+
+
 
 if __name__=="__main__":
     app.run(port=3004,debug=True)
